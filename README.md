@@ -64,7 +64,7 @@ diff --git a/src/hands.rs b/src/hands.rs
  
 @@ -54,7 +55,8 @@ pub fn play_hand(own_hand: Hand, other_hand: Hand) -> HandResult {
      match (own_hand, other_hand) {
-         (Rock, Scissors)
+         | (Rock, Scissors)
          | (Scissors, Paper)
 -        | (Paper, Rock)             => Win,
 +        | (Paper, Rock)
