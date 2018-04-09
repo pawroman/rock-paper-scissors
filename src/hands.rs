@@ -52,7 +52,7 @@ lazy_static! {
 
 pub fn play_hand(own_hand: Hand, other_hand: Hand) -> HandResult {
     match (own_hand, other_hand) {
-        (Rock, Scissors)
+        | (Rock, Scissors)
         | (Scissors, Paper)
         | (Paper, Rock)             => Win,
 
