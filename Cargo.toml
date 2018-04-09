@@ -1,0 +1,10 @@
+[package]
+name = "rock-paper-scissors"
+version = "0.1.0"
+authors = ["Paweł Romanowski <pawroman@gmail.com>"]
+
+[dependencies]
+lazy_static = "1.0"
+rand = "0.5.0-pre.0"
+strum = "0.9.0"
+strum_macros = "0.9.0"
