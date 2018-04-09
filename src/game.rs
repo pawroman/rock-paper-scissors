@@ -20,7 +20,7 @@ impl Game {
     }
 
     pub fn game_loop(&mut self) {
-        println!("=== Rock Paper Scissors Game ===\n");
+        println!("=== {} Game ===\n", HANDS_NAMES.join(" "));
 
         while let Some(player_hand) = self.choose_hand() {
             let (cpu_hand, result) = self.play_hand(player_hand);
