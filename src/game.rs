@@ -36,10 +36,9 @@ impl Game {
 
     fn choose_hand(&self) -> Option<Hand> {
         let hand_moves = HANDS_NAMES.join(" / ");
-
         print!("Your move ({} / Quit)? >> ", hand_moves);
-        let _ = io::stdout().flush();
 
+        let _ = io::stdout().flush();
         let mut input = String::new();
 
         if let Err(_) = io::stdin().read_line(&mut input) {
@@ -54,9 +53,9 @@ impl Game {
     fn play_hand(&mut self, hand: Hand) -> (Hand, HandResult) {
         let cpu_hand = random_hand(&mut self.rng);
         let result = play_hand(hand, cpu_hand);
-        let score_delta = match &result {
-            &HandResult::Win => 1,
-            &HandResult::Lose => -1,
+        let score_delta = match result {
+            HandResult::Win => 1,
+            HandResult::Lose => -1,
             _ => 0,
         };
 
