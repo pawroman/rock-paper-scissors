@@ -19,30 +19,31 @@ $ cargo run
      Running `target/debug/rock-paper-scissors`
 === Rock Paper Scissors Game ===
 
-Your move (Rock / Paper / Scissors / Quit)? >> p
+Any non-move input quits.
+
+Your move ([1] Rock / [2] Paper / [3] Scissors)? >> 2
 You play : Paper
-CPU plays: Paper
-
-Result: you Draw!
-Current score: 0
-
-Your move (Rock / Paper / Scissors / Quit)? >> s
-You play : Scissors
-CPU plays: Paper
+CPU plays: Rock
 
 Result: you Win!
 Current score: 1
 
-Your move (Rock / Paper / Scissors / Quit)? >> r
+Your move ([1] Rock / [2] Paper / [3] Scissors)? >> 1
 You play : Rock
 CPU plays: Paper
 
 Result: you Lose!
 Current score: 0
 
-Your move (Rock / Paper / Scissors / Quit)? >> q
-Game over.
+Your move ([1] Rock / [2] Paper / [3] Scissors)? >> 3
+You play : Scissors
+CPU plays: Scissors
 
+Result: you Draw!
+Current score: 0
+
+Your move ([1] Rock / [2] Paper / [3] Scissors)? >> q
+Game over.
 ```
 
 
@@ -50,63 +51,95 @@ Game over.
 
 The implementation makes it easy to modify the rules of the game.
 
-For example, to add a `Clip` hand that beats `Paper`,
-one needs to modify the code like so:
+For example, to add a `Paperclip` hand that beats `Paper`,
+but is beaten by `Scissors`, changing the rules of the game like this:
+
+`Rock (beats) Scissors (beats) Paperclip (beats) Paper (beats) Rock`
+
+This modification can be implemented as follows:
 
 ```
 diff --git a/src/hands.rs b/src/hands.rs
+index 998d467..471ab38 100644
+--- a/src/hands.rs
++++ b/src/hands.rs
+@@ -18,6 +18,7 @@ pub enum HandResult {
+ pub enum Hand {
      Rock,
      Paper,
++    Paperclip,
      Scissors,
-+    Clip,
  }
  
+@@ -38,7 +39,8 @@ impl Beats for Hand {
+         match *self {
+             Rock => Scissors,
+             Paper => Rock,
+-            Scissors => Paper,
++            Paperclip => Paper,
++            Scissors => Paperclip,
+         }
+     }
+ }
+@@ -78,11 +80,19 @@ mod tests {
+         assert_eq!(play_hand(Rock, Rock), Draw);
  
-@@ -54,7 +55,8 @@ pub fn play_hand(own_hand: Hand, other_hand: Hand) -> HandResult {
-     match (own_hand, other_hand) {
-         | (Rock, Scissors)
-         | (Scissors, Paper)
--        | (Paper, Rock)             => Win,
-+        | (Paper, Rock)
-+        | (Clip, Paper)             => Win,
+         assert_eq!(play_hand(Paper, Rock), Win);
+-        assert_eq!(play_hand(Paper, Scissors), Lose);
++        assert_eq!(play_hand(Paper, Scissors), Draw);
+         assert_eq!(play_hand(Paper, Paper), Draw);
  
-         _ if own_hand == other_hand => Draw,
- 
-@@ -92,5 +94,12 @@ mod test {
-         assert_eq!(play_hand(Scissors, Paper), Win);
+-        assert_eq!(play_hand(Scissors, Paper), Win);
++        assert_eq!(play_hand(Scissors, Paper), Draw);
          assert_eq!(play_hand(Scissors, Rock), Lose);
          assert_eq!(play_hand(Scissors, Scissors), Draw);
 +
-+        // tests for non-standard hand, Clip
-+        assert_eq!(play_hand(Clip, Paper), Win);
-+        assert_eq!(play_hand(Paper, Clip), Lose);
-+        assert_eq!(play_hand(Clip, Clip), Draw);
++        // tests for Paperclip
++        assert_eq!(play_hand(Paperclip, Paper), Win);
++        assert_eq!(play_hand(Paper, Paperclip), Lose);
++        assert_eq!(play_hand(Paperclip, Rock), Draw);
++        assert_eq!(play_hand(Paperclip, Paperclip), Draw);
 +
-+        // ... etc ...
++        // ...
      }
  }
-
 ```
 
-Then running the game, `Clip` becomes immediately available to play:
+Then running the game, `Paperclip` becomes immediately available to play:
 
 ```
-=== Rock Paper Scissors Clip Game ===
+=== Rock Paper Paperclip Scissors Game ===
 
-Your move (Rock / Paper / Scissors / Clip / Quit)? >> c
-You play : Clip
-CPU plays: Clip
+Any non-move input quits.
 
-Result: you Draw!
-Current score: 0
-
-Your move (Rock / Paper / Scissors / Clip / Quit)? >> c
-You play : Clip
+Your move ([1] Rock / [2] Paper / [3] Paperclip / [4] Scissors)? >> 3
+You play : Paperclip
 CPU plays: Paper
 
 Result: you Win!
 Current score: 1
 
-Your move (Rock / Paper / Scissors / Clip / Quit)? >> q
+Your move ([1] Rock / [2] Paper / [3] Paperclip / [4] Scissors)? >> 3
+You play : Paperclip
+CPU plays: Scissors
+
+Result: you Lose!
+Current score: 0
+
+Your move ([1] Rock / [2] Paper / [3] Paperclip / [4] Scissors)? >> 3
+You play : Paperclip
+CPU plays: Scissors
+
+Result: you Lose!
+Current score: -1
+
+Your move ([1] Rock / [2] Paper / [3] Paperclip / [4] Scissors)? >> 3
+You play : Paperclip
+CPU plays: Rock
+
+Result: you Draw!
+Current score: -1
+
+Your move ([1] Rock / [2] Paper / [3] Paperclip / [4] Scissors)? >> q
 Game over.
 ```
