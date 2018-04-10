@@ -41,7 +41,8 @@ lazy_static! {
         let mut hands_codes = HashMap::new();
 
         for hand in Hand::iter() {
-            let code = hand.to_string().split_at(1).0.to_string();
+            // take a string slice of first "character" in enum name
+            let code = hand.to_string()[..1].to_string();
             hands_codes.insert(code, hand);
         }
 
