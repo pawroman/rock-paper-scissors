@@ -1,8 +1,52 @@
-use hands::{Hand, HandResult, HANDS_NAMES, HANDS_CODES, play_hand, random_hand};
+use hands::{Hand, HandResult, HANDS, HANDS_NAMES, play_hand, random_hand};
 
 use rand::{NewRng, StdRng};
+use std::collections::HashMap;
 use std::io;
 use std::io::Write;
+
+
+struct HandInput {
+    hand: Hand,
+    label: String,
+    number: usize,
+}
+
+
+lazy_static! {
+    static ref HAND_INPUTS: Vec<HandInput> = {
+        HANDS.iter().enumerate().map(
+            |(num, &hand)| {
+                let number = num + 1;
+                let label = format!("[{}] {}", number, hand.to_string());
+
+                HandInput { hand, label, number }
+            }
+        ).collect()
+    };
+}
+
+lazy_static! {
+    static ref INPUT_MAP: HashMap<usize, &'static HandInput> = {
+        let mut input_map = HashMap::new();
+
+        for hand_input in HAND_INPUTS.iter() {
+            input_map.insert(hand_input.number, hand_input);
+        }
+
+        input_map
+    };
+}
+
+lazy_static! {
+    static ref HAND_INPUT_PROMPT: String = {
+        HAND_INPUTS
+        .iter()
+        .map(|hand_input| hand_input.label.clone())
+        .collect::<Vec<_>>()
+        .join(" / ")
+    };
+}
 
 
 pub struct Game {
@@ -21,6 +65,7 @@ impl Game {
 
     pub fn game_loop(&mut self) {
         println!("=== {} Game ===\n", HANDS_NAMES.join(" "));
+        println!("Any non-move input quits.\n");
 
         while let Some(player_hand) = self.choose_hand() {
             let (cpu_hand, result) = self.play_hand(player_hand);
@@ -35,8 +80,7 @@ impl Game {
     }
 
     fn choose_hand(&self) -> Option<Hand> {
-        let hand_moves = HANDS_NAMES.join(" / ");
-        print!("Your move ({} / Quit)? >> ", hand_moves);
+        print!("Your move ({})? >> ", *HAND_INPUT_PROMPT);
 
         let _ = io::stdout().flush();
         let mut input = String::new();
@@ -44,10 +88,14 @@ impl Game {
         if let Err(_) = io::stdin().read_line(&mut input) {
             None
         } else {
-            let code = input.trim().to_uppercase();
-
-            HANDS_CODES.get(&code).map(|&hand| hand)
+            self.parse_input(input)
         }
+    }
+
+    fn parse_input(&self, input: String) -> Option<Hand> {
+        let number: usize = input.trim().parse().ok()?;
+
+        INPUT_MAP.get(&number).map(|ref hand_input| hand_input.hand)
     }
 
     fn play_hand(&mut self, hand: Hand) -> (Hand, HandResult) {

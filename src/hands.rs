@@ -1,7 +1,6 @@
 extern crate rand;
 
 use rand::{Rng, StdRng};
-use std::collections::HashMap;
 use strum::IntoEnumIterator;
 
 use self::Hand::*;
@@ -25,29 +24,13 @@ pub enum Hand {
 
 
 lazy_static! {
-    static ref HANDS: Vec<Hand> = Hand::iter().collect();
+    pub static ref HANDS: Vec<Hand> = Hand::iter().collect();
 }
-
 
 lazy_static! {
     pub static ref HANDS_NAMES: Vec<String> = Hand::iter()
                                               .map(|hand| hand.to_string())
                                               .collect();
-}
-
-
-lazy_static! {
-    pub static ref HANDS_CODES: HashMap<String, Hand> = {
-        let mut hands_codes = HashMap::new();
-
-        for hand in Hand::iter() {
-            // take a string slice of first "character" in enum name
-            let code = hand.to_string()[..1].to_string();
-            hands_codes.insert(code, hand);
-        }
-
-        hands_codes
-    };
 }
 
 
@@ -70,14 +53,16 @@ pub fn random_hand(rng: &mut StdRng) -> Hand {
 
 
 #[cfg(test)]
-mod test {
-    use super::{HANDS, HANDS_NAMES, HANDS_CODES, play_hand};
+mod tests {
+    use super::{HANDS, HANDS_NAMES, play_hand};
     use super::{HandResult::*, Hand::*};
+    use std::collections::HashSet;
 
     #[test]
-    fn test_unique_codes() {
+    fn test_unique_names() {
         assert_eq!(HANDS_NAMES.len(), HANDS.len());
-        assert_eq!(HANDS_CODES.len(), HANDS.len());
+        assert_eq!(HANDS_NAMES.iter().collect::<HashSet<_>>().len(),
+                   HANDS.len());
     }
 
     #[test]
