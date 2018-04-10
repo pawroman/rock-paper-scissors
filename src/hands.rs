@@ -34,6 +34,7 @@ pub trait Beats {
 
 impl Beats for Hand {
     fn beats(&self) -> Self {
+        // match is exhaustive, so every enum variant must be covered
         match *self {
             Rock => Scissors,
             Paper => Rock,
