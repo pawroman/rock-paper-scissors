@@ -12,7 +12,6 @@ struct HandInput {
     number: usize,
 }
 
-
 lazy_static! {
     static ref HAND_INPUTS: Vec<HandInput> = {
         HANDS.iter().enumerate().map(
@@ -24,9 +23,7 @@ lazy_static! {
             }
         ).collect()
     };
-}
 
-lazy_static! {
     static ref INPUT_MAP: HashMap<usize, &'static HandInput> = {
         let mut input_map = HashMap::new();
 
@@ -36,9 +33,7 @@ lazy_static! {
 
         input_map
     };
-}
 
-lazy_static! {
     static ref HAND_INPUT_PROMPT: String = {
         HAND_INPUTS
         .iter()
@@ -48,12 +43,10 @@ lazy_static! {
     };
 }
 
-
 pub struct Game {
     rng: StdRng,
     score: isize,
 }
-
 
 impl Game {
     pub fn new() -> Game {

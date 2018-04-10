@@ -14,7 +14,6 @@ pub enum HandResult {
     Draw,
 }
 
-
 #[derive(Copy, Clone, Debug, Eq, PartialEq, EnumIter, ToString)]
 pub enum Hand {
     Rock,
@@ -22,30 +21,36 @@ pub enum Hand {
     Scissors,
 }
 
-
 lazy_static! {
     pub static ref HANDS: Vec<Hand> = Hand::iter().collect();
-}
-
-lazy_static! {
     pub static ref HANDS_NAMES: Vec<String> = Hand::iter()
                                               .map(|hand| hand.to_string())
                                               .collect();
 }
 
+pub trait Beats {
+    fn beats(&self) -> Self;
+}
 
-pub fn play_hand(own_hand: Hand, other_hand: Hand) -> HandResult {
-    match (own_hand, other_hand) {
-        | (Rock, Scissors)
-        | (Scissors, Paper)
-        | (Paper, Rock)             => Win,
-
-        _ if own_hand == other_hand => Draw,
-
-        _                           => Lose,
+impl Beats for Hand {
+    fn beats(&self) -> Self {
+        match *self {
+            Rock => Scissors,
+            Paper => Rock,
+            Scissors => Paper,
+        }
     }
 }
 
+pub fn play_hand(own_hand: Hand, other_hand: Hand) -> HandResult {
+    let (own_beats, other_beats) = (own_hand.beats(), other_hand.beats());
+
+    match (own_beats, other_beats) {
+        _ if own_beats == other_hand => Win,
+        _ if other_beats == own_hand => Lose,
+        _                            => Draw,
+    }
+}
 
 pub fn random_hand(rng: &mut StdRng) -> Hand {
     *rng.choose(&HANDS).unwrap()

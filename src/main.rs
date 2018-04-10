@@ -18,7 +18,6 @@ fn play_commandline() {
     game.game_loop();
 }
 
-
 fn main() {
     play_commandline();
 }
