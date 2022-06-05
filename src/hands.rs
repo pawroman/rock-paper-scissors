@@ -1,20 +1,20 @@
 extern crate rand;
 
-use rand::{Rng, StdRng};
+use rand::prelude::*;
 use strum::IntoEnumIterator;
 
 use self::Hand::*;
 use self::HandResult::*;
 
 
-#[derive(ToString, Eq, Debug, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Display)]
 pub enum HandResult {
     Win,
     Lose,
     Draw,
 }
 
-#[derive(Copy, Clone, Debug, Eq, PartialEq, EnumIter, ToString)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, EnumIter, Display)]
 pub enum Hand {
     Rock,
     Paper,
@@ -53,8 +53,8 @@ pub fn play_hand(own_hand: Hand, other_hand: Hand) -> HandResult {
     }
 }
 
-pub fn random_hand(rng: &mut StdRng) -> Hand {
-    *rng.choose(&HANDS).unwrap()
+pub fn random_hand(mut rng: &mut ThreadRng) -> Hand {
+    *HANDS.choose(&mut rng).unwrap()
 }
 
 

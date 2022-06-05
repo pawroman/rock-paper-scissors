@@ -1,6 +1,6 @@
 use hands::{Hand, HandResult, HANDS, HANDS_NAMES, play_hand, random_hand};
 
-use rand::{NewRng, StdRng};
+use rand::prelude::*;
 use std::collections::HashMap;
 use std::io;
 use std::io::Write;
@@ -17,7 +17,7 @@ lazy_static! {
         HANDS.iter().enumerate().map(
             |(num, &hand)| {
                 let number = num + 1;
-                let label = format!("[{}] {}", number, hand.to_string());
+                let label = format!("[{}] {}", number, hand);
 
                 HandInput { hand, label, number }
             }
@@ -44,14 +44,14 @@ lazy_static! {
 }
 
 pub struct Game {
-    rng: StdRng,
+    rng: ThreadRng,
     score: isize,
 }
 
 impl Game {
     pub fn new() -> Game {
         Game {
-            rng: StdRng::new(),
+            rng: thread_rng(),
             score: 0,
         }
     }
@@ -63,9 +63,9 @@ impl Game {
         while let Some(player_hand) = self.choose_hand() {
             let (cpu_hand, result) = self.play_hand(player_hand);
 
-            println!("You play : {}", player_hand.to_string());
-            println!("CPU plays: {}\n", cpu_hand.to_string());
-            println!("Result: you {}!", result.to_string());
+            println!("You play : {}", player_hand);
+            println!("CPU plays: {}\n", cpu_hand);
+            println!("Result: you {}!", result);
             println!("Current score: {}\n", self.score);
         }
 
@@ -78,7 +78,7 @@ impl Game {
         let _ = io::stdout().flush();
         let mut input = String::new();
 
-        if let Err(_) = io::stdin().read_line(&mut input) {
+        if io::stdin().read_line(&mut input).is_err() {
             None
         } else {
             self.parse_input(input)
@@ -88,7 +88,7 @@ impl Game {
     fn parse_input(&self, input: String) -> Option<Hand> {
         let number: usize = input.trim().parse().ok()?;
 
-        INPUT_MAP.get(&number).map(|ref hand_input| hand_input.hand)
+        INPUT_MAP.get(&number).map(|hand_input| hand_input.hand)
     }
 
     fn play_hand(&mut self, hand: Hand) -> (Hand, HandResult) {
