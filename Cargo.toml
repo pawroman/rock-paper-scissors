@@ -2,6 +2,7 @@
 name = "rock-paper-scissors"
 version = "0.1.0"
 authors = ["Paweł Romanowski <pawroman@gmail.com>"]
+edition = "2021"
 
 [dependencies]
 lazy_static = "1.4.0"

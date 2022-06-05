@@ -1,7 +1,7 @@
-extern crate rand;
-
 use rand::prelude::*;
 use strum::IntoEnumIterator;
+use strum_macros::{Display, EnumIter};
+use lazy_static::lazy_static;
 
 use self::Hand::*;
 use self::HandResult::*;

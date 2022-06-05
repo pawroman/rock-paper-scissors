@@ -1,6 +1,8 @@
-use hands::{Hand, HandResult, HANDS, HANDS_NAMES, play_hand, random_hand};
+use crate::hands::{Hand, HandResult, HANDS, HANDS_NAMES, play_hand, random_hand};
 
 use rand::prelude::*;
+use lazy_static::lazy_static;
+
 use std::collections::HashMap;
 use std::io;
 use std::io::Write;
